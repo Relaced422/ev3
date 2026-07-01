@@ -6,7 +6,6 @@ from pybricks.tools import wait
 from pybricks.robotics import DriveBase
 from random import shuffle
 
-# Create your objects here.
 ev3 = EV3Brick()
 
 left_motor  = Motor(Port.B)
@@ -15,13 +14,12 @@ sonar       = UltrasonicSensor(Port.S4)
 gyro        = GyroSensor(Port.S2)
 line_sensor = ColorSensor(Port.S3)
 
-robot = DriveBase(left_motor, right_motor, wheel_diameter=55.5, axle_track=104)
+robot = DriveBase(left_motor, right_motor, wheel_diameter=52, axle_track=104)
 
-# ── Changeable variables ──────────────────────────────────────────────
 SCAN_STEP        = 5
 DRIVE_SPEED      = 10
-PUSH_EXTRA       = 80
-OBJECT_THRESHOLD = 300
+PUSH_EXTRA       = 100
+OBJECT_THRESHOLD = 450
 OBJECT_CENTER_OFFSET = 8
 STOP_BEFORE      = 0
 TURN_SPEED       = 150
@@ -31,7 +29,6 @@ BLACK            = 9
 WHITE            = 85
 LINE_SPEED       = 70
 LINE_GAIN        = 1.2
-# ─────────────────────────────────────────────────────────────────────
 
 def gyro_turn(target_angle):
     while True:
@@ -53,7 +50,6 @@ def scan_objects():
     ev3.speaker.say("Scanning for objects")
     gyro.reset_angle(0)
     wait(500)
-
     raw = []
     for step in range(0, 360, SCAN_STEP):
         gyro_turn(step)
@@ -80,15 +76,14 @@ def scan_objects():
 def remove_object(angle, distance):
     gyro_turn(angle + OBJECT_CENTER_OFFSET)
     wait(200)
-    drive_dist = distance - STOP_BEFORE + PUSH_EXTRA
+    drive_dist = distance + PUSH_EXTRA
     robot.straight(drive_dist)
     wait(200)
     robot.straight(-drive_dist)
     wait(200)
     
 
-# ── Mode 1: Remove on detect ──────────────────────────────────────────
-# Spins around and pushes away each object the moment it sees one.
+# Mode 1: Remove on detect
 # Works
 def mode_remove_on_detect():
     ev3.speaker.say("Remove on detect")
@@ -107,9 +102,7 @@ def mode_remove_on_detect():
             
     ev3.speaker.say("All objects removed")
 
-# ── Mode 2: Scan then remove in order ────────────────────────────────
-# Scans the full 360 first, then removes objects one by one
-# starting from the first one found going clockwise.
+# Mode 2: Scan then remove in order
 # Doesnt work
 def mode_scan_then_remove_in_order():
     ev3.speaker.say("Scan, then remove in order")
@@ -121,8 +114,7 @@ def mode_scan_then_remove_in_order():
 
     ev3.speaker.say("All objects removed")
 
-# ── Mode 3: Scan then remove randomly ────────────────────────────────
-# Scans the full 360 first, then removes objects in a random order.
+# Mode 3: Scan then remove randomly
 # Doesnt work
 def mode_scan_then_remove_randomly():
     ev3.speaker.say("Scan, then remove randomly")
@@ -134,9 +126,7 @@ def mode_scan_then_remove_randomly():
         gyro_turn(0)
     ev3.speaker.say("All objects removed")
 
-# ── Mode 4: Scan then remove furthest first ───────────────────────────
-# Scans the full 360 first, then removes the furthest object first
-# and works its way inward to the closest.
+# Mode 4: Scan then remove furthest first
 # Doesnt work
 def mode_scan_then_remove_furthest_first():
     ev3.speaker.say("Scan, then remove furthest first")
@@ -147,9 +137,7 @@ def mode_scan_then_remove_furthest_first():
         remove_object(angle, dist)
     ev3.speaker.say("All objects removed")
 
-# ── Mode 5: Follow a line ─────────────────────────────────────────────
-# Uses the color sensor to follow a black line on the floor.
-# Press CENTER to stop.
+#Mode 5: Follow a line
 # Works
 def mode_follow_line():
     ev3.speaker.say("Following line. Press center to stop.")
@@ -161,7 +149,6 @@ def mode_follow_line():
     robot.stop()
     ev3.speaker.say("Stopped")
 
-# ── Menu ──────────────────────────────────────────────────────────────
 MODES = [
     ("Remove on detect",          mode_remove_on_detect),
     ("Scan, remove in order",     mode_scan_then_remove_in_order),
